@@ -1,0 +1,286 @@
+<!DOCTYPE html-->
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css" />
+<link rel="stylesheet" href="css/jquery-ui.css" />
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery-ui.js"></script>
+<script src="js/jquery.mobile-1.4.5.min.js"></script>
+<title>PYMES-Bienvenidos</title>
+<script type="text/javascript">
+$(document).ready(function inicio(){
+
+  var btnGuardar=$("#guardar");
+  btnGuardar.click(function guardarempleado(){
+  var nom=$("#nombre").val();
+  var dir=$("#direccion").val();
+  var gir=$("#giro").val();
+    if(nom=="" || dir==""|| gir==""  ){
+         alert ("Ingresa informacion en todos los campos");
+     }
+     else{
+    $.ajax({
+    type:"POST",
+    url:"Guardar.php",
+    data:"nombre="+nom+"&direccion="+dir+"&giro="+gir,
+    success: registro
+    });
+    
+    function registro(datos){
+    alert(datos);
+    }
+     }
+  });
+  
+ var btnConsulta=$("#consulta");//consultar todos los registros
+  btnConsulta.click(function cons(){  
+    $.ajax({
+    type:"POST",
+    url:"consulta.php",
+    data:"",
+    success: consulta
+    });
+    
+    function consulta(datos){
+    var respDatos=$.parseJSON(datos);   
+    var respuesta=$("#resconsultaempresa");
+    dibujarTabla(respuesta,respDatos);
+    }
+  });
+  
+  function dibujarTabla(respuesta,respDatos){
+         respuesta.html("");
+    respuesta.append('<table id="tab" border="1">');
+    var tabla=$("#tab");
+    tabla.html("<tr><th>ID</th><th>Nombre</th><th>Direccion</th><th>Giro</th><th>Foto</th><th>Latitud</th><th>Altitud</th></tr>");
+    for(var i in respDatos){
+      tabla.append("<tr><td>"+respDatos[i].Id+"</td>"
+      +"<td>"+respDatos[i].Nombre+"</td>"
+      +"<td>"+respDatos[i].Direccion+"</td>"
+      +"<td>"+respDatos[i].Giro+"</td>"
+      +"<td>"+respDatos[i].Foto+"</td>"
+      +"<td>"+respDatos[i].Latitud+"</td>"
+      +"<td>"+respDatos[i].Altitud+"</td></tr>");
+    }
+    tabla.append("</table>");
+  }
+  var consultar2=$("#btnconsultar2");
+  consultar2.click(function cons2(){
+  var valConsulta=$("#valConsulta").val();
+    $.ajax({
+      type:"POST",
+      url:"consultauno.php",
+      data:"Id="+valConsulta,
+      success: consultaArticulo
+    });
+    
+    function consultaArticulo(datos){
+    var respDatos2=$.parseJSON(datos);   
+    var respuesta2=$("#resconsulta2");
+    dibujarTabla(respuesta2,respDatos2);
+    }
+  });
+  
+  document.addEventListener("deviceready", function(){
+		$('#regFoto').tap(function(){
+			navigator.device.capture.captureImage(function(mediaFiles){
+			path = mediaFiles[0].fullPath;
+			$('#Foto').append('<br><img src="'+path+'" width="100%" />').attr('rel',path);
+			},function(error){
+			navigator.notification.alert('Error code: ' + error.code, null, 'Capture Error');
+			},{limit:1});
+		});
+	}, false);
+});
+</script>
+<style type="text/css">
+p{
+text-align:center;
+}
+ 	
+			* {
+				margin:0px;
+				padding:0px;
+			}
+			
+			#header {
+				margin:auto;
+				width:1300px;
+				font-family:Arial, Helvetica, sans-serif;
+			}
+			
+			ul, ol {
+				list-style:none;
+			}
+			
+			.nav > li {
+				float:left;
+			}
+			
+			.nav li a {
+				background-color:#000;
+				color:red;
+				text-decoration:none;
+				padding:10px 12px;
+				display:block;
+			}
+			
+			.nav li a:hover {
+				background-color:black;
+			}
+			
+			.nav li ul {
+				display:none;
+				position:absolute;
+				min-width:140px;
+			}
+			
+			.nav li:hover > ul {
+				display:block;
+			}
+			
+			.nav li ul li {
+				position:relative;
+			}
+			
+			.nav li ul li ul {
+				right:-140px;
+				top:0px;
+			}
+                        
+			
+		
+</style>
+</head>
+<body>
+<div data-role="page" id="principal">
+      <div data-role="header" >
+             <img src="1.jpg"  width="1300px" height="200px">   
+       </div>
+    <div data-role="content-menu"><center>
+        <div>
+      			<ul class="nav">
+				<li><a >  Articulos  </a>
+					<ul>
+						<li><a href="#registro" >Registrar Empresa</a></li>
+                                                <li><a href="#consulta" >Consultar Empresas</a></li>
+                                                <li><a href="#consultauno" >Consultar Empresa</a></li>
+                                                <li><a href="#actualizar" >Actualizar Empresa</a></li>
+                                                <li><a href="#eliminar" >Eliminar Empresa</a></li>
+                                	</ul>
+				</li>
+                                
+				
+						<li><a href="#informacion" >Información</a></li>
+                                     
+        </div>    </center>   
+                
+            </div>
+    <div data-role="content-imagenes">
+        <center>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+         <br>
+        <br>
+        <br>
+       
+        
+        </center>
+    </div>
+      <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+<div data-role="page" id="registro">
+    <div data-role="header">
+             <img src="1.jpg"  width="1300px" height="200px">   
+    <p>Registrar Empresa</p>
+  </div>
+  <div data-role="content">
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre">
+    <label for="direccion">Dirección:</label>
+    <input type="text" id="direccion">
+    <label for="giro">Giro:</label>
+    <input type="text" placeholder="Giro de la empresa" id="giro">
+    <ul data-role="listview" data-inset="true" data-dividertheme="b" data-theme="a">
+    <li><a href="#" id="regFoto">Tomar Foto</a></li>
+    <li><div id="Foto"></div></li>
+    </ul>
+        
+    
+    <input type="button" id="obtener" value="Obtener">
+    <label for="latitud">Latitud:</label>
+    
+    <label for="altitud">Altitud:</label>
+ 
+    <input type="button" id="guardar" value="Guardar">
+  </div>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+    
+<div data-role="page" id="consulta">
+  <div data-role="header" >
+      <img src="1.jpg"  width="1300px" height="200px">   
+    <p>Consultar Empresa </p>
+  </div>
+  <div data-role="content">
+    <input type="button" id="consulta" value="Consultar">
+    <div id="resconsultaempresa"></div>
+  </div>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+    
+<div data-role="page" id="consultauno">
+  <div data-role="header" >
+      <img src="1.jpg"  width="1300px" height="200px">   
+    <p>Consultar Empresa </p>
+  </div>
+  <div data-role="content">
+   <label for="valConsulta">ID:</label>
+    <input type="text" id="valConsulta" >
+    <input type="button" id="btnconsultar2" value="Consultar">
+    <div id="resconsulta2"></div>
+  </div>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+
+<div data-role="page" id="informacion">
+  <div data-role="header" >
+      <img src="1.jpg"  width="1300px" height="200px">   
+    <p>Eliminar Cliente</p>
+  </div>
+  <div data-role="content">
+    
+      <center> <FONT FACE="arial" SIZE=6 COLOR=GREEN><B>INSTITUTO TECNOLOGICO SUPERIOR DE LIBRES PUEBLA</B></FONT><br><br>
+          <FONT FACE="arial" SIZE=5 COLOR=BLACK><i>Organismo Publico Desentralizado del Estado de Puebla</i></FONT><br><br>
+          <FONT FACE="arial" SIZE=4 COLOR=BLACK>Ingenieria en Sistemas Computacionales<br><br>
+          Desarrollo de Aplicaciones Moviles I y II<br><br>
+          Proyecto Final<br><br>
+          Presenta<br><br>
+          Velazquez Morelos Laura<br><br>
+          Parra García Valeria<br><br>
+          Valerio Sanchez Alejandro<br>
+          </FONT>
+      </center>
+      <right> Libres, Puebla. Mayo 2015</right>
+        
+    
+       </div>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+</body>
+</html>
